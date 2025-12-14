@@ -1,0 +1,36 @@
+import re
+
+lines = []
+keywords = ['var', 'func', 'return', 'if', 'for', 'while', 'else', 'escape', 'end']
+operators = ['+', '-', '*', '/']
+variables = {}
+lists = {}
+functions = {}
+
+class Variable:
+    def __init__(self, line):
+        print(line)
+        self.line = line.replace('var', '').replace(' ', '').replace('\n', '')
+        self.name = str(self.line[:self.line.find('=')])
+        print(self.line, self.name)
+class Function:
+    def __init__(self, line):
+        self.line = line
+        self.name = line[4:line.find('(')].strip()
+        self.args = [a.strip() for a in line[line.find('(') + 1:line.find(')')].split(',')]
+
+        self.end_line = next(
+            (i for i, l in enumerate(lines) if l.strip() == f"end {self.name}"),
+            None
+        )
+
+with open("plik.txt", "r", encoding="utf-8") as f:
+    for linia in f:
+        lines.append(linia.strip())
+
+for line in lines:
+    found_keywords = [kw for kw in keywords if kw in line]
+    if 'var' in found_keywords:
+        variable = Variable(line)
+    if 'func' in found_keywords:
+        function = Function(line)
